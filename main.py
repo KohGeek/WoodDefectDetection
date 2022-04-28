@@ -4,8 +4,6 @@ import imutils
 import numpy as np
 
 from imutils.video import FileVideoStream
-from matplotlib import pyplot as plt
-from matplotlib.animation import FuncAnimation
 
 def main(imagedir):
 
