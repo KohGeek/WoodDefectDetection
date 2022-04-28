@@ -72,14 +72,14 @@ def main(imagedir):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(frame, 'Small Knot', (x, y), font, font_size, font_color, font_thickness)
                 small_knot = True
-            else:
+            elif area > 2000:
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 cv2.putText(frame, 'Dead Knot', (x, y), font, font_size, font_color, font_thickness)
                 dead_knot = True
 
         for c in holes_cnts:
             area = cv2.contourArea(c)
-            if area < 300:
+            if area < 200:
                 ((x, y), r) = cv2.minEnclosingCircle(c)
                 cv2.circle(frame, (int(x), int(y)), int(r), (255, 0, 0), 1)
                 cv2.putText(frame, 'Hole', (int(x), int(y)), font, font_size, (255, 0, 0), font_thickness)
@@ -172,45 +172,13 @@ def find_defects(wood_darkness, dilated_mask):
     _, thresh = cv2.threshold(knot_gray, 90, 255, cv2.THRESH_BINARY_INV)
     k_img = cv2.bitwise_and(thresh, thresh, mask=dilated_mask)
     
-    knot_kernel = np.ones((5, 5), np.uint8)
+    knot_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
     knot_img = cv2.morphologyEx(k_img, cv2.MORPH_OPEN, knot_kernel, iterations=2)
-    knot_img = cv2.morphologyEx(knot_img, cv2.MORPH_DILATE, knot_kernel, iterations=7)
+    knot_img = cv2.morphologyEx(knot_img, cv2.MORPH_CLOSE, knot_kernel, iterations=2)
+    knot_img = cv2.morphologyEx(knot_img, cv2.MORPH_DILATE, knot_kernel, iterations=6)
 
 
     return holes_img, crack_img, knot_img
-
-
-def plt_hsv(vidcap):
-    frame = vidcap.read()
-    frame = imutils.resize(frame, width=200)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    ax1 = plt.subplot(131)
-    ax1.set_title('Hue')
-    ax2 = plt.subplot(132)
-    ax2.set_title('Saturation')
-    ax3 = plt.subplot(133)
-    ax3.set_title('Value')
-
-    im1 = ax1.imshow(frame[:,:,0], cmap='gray')
-    im2 = ax2.imshow(frame[:,:,1], cmap='gray')
-    im3 = ax3.imshow(frame[:,:,2], cmap='gray')
-
-    def update(i):
-        frame = vidcap.read()
-        frame = imutils.resize(frame, width=200)
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        im1.set_data(frame[:,:,0])
-        im2.set_data(frame[:,:,1])
-        im3.set_data(frame[:,:,2])
-
-    def close(event):
-        if event.key == 'q':
-            plt.close()
-            vidcap.release()
-
-    FuncAnimation(plt.gcf(), update, interval=5)
-    plt.gcf().canvas.mpl_connect('key_press_event', close)
-    plt.show()
 
 
 if __name__ == '__main__':

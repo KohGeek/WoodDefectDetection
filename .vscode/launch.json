@@ -11,7 +11,7 @@
       "program": "${file}",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["-v", "reference_data/videos/crack_simulated_video.avi"]
+      "args": ["-v", "reference_data/videos/deadknot_simulated_video.avi"]
     }
   ]
 }
