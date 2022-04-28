@@ -70,7 +70,7 @@ def main(imagedir):
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 cv2.putText(frame, 'Small Knot', (x, y), font, font_size, font_color, font_thickness)
                 small_knot = True
-            elif area > 2000:
+            elif area > 1000:
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
                 cv2.putText(frame, 'Dead Knot', (x, y), font, font_size, font_color, font_thickness)
                 dead_knot = True
@@ -170,10 +170,11 @@ def find_defects(wood_darkness, dilated_mask):
     _, thresh = cv2.threshold(knot_gray, 90, 255, cv2.THRESH_BINARY_INV)
     k_img = cv2.bitwise_and(thresh, thresh, mask=dilated_mask)
     
-    knot_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
-    knot_img = cv2.morphologyEx(k_img, cv2.MORPH_OPEN, knot_kernel, iterations=2)
-    knot_img = cv2.morphologyEx(knot_img, cv2.MORPH_CLOSE, knot_kernel, iterations=2)
-    knot_img = cv2.morphologyEx(knot_img, cv2.MORPH_DILATE, knot_kernel, iterations=6)
+    knot_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    knot_img = cv2.morphologyEx(k_img, cv2.MORPH_OPEN, knot_kernel, iterations=3)
+    knot_img = cv2.morphologyEx(knot_img, cv2.MORPH_CLOSE, knot_kernel, iterations=3)
+    knot_img = cv2.morphologyEx(knot_img, cv2.MORPH_DILATE, knot_kernel, iterations=7)
+    cv2.imshow('knot', knot_img)
 
 
     return holes_img, crack_img, knot_img
