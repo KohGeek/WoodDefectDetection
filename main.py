@@ -174,7 +174,6 @@ def find_defects(wood_darkness, dilated_mask):
     knot_img = cv2.morphologyEx(k_img, cv2.MORPH_OPEN, knot_kernel, iterations=3)
     knot_img = cv2.morphologyEx(knot_img, cv2.MORPH_CLOSE, knot_kernel, iterations=3)
     knot_img = cv2.morphologyEx(knot_img, cv2.MORPH_DILATE, knot_kernel, iterations=7)
-    cv2.imshow('knot', knot_img)
 
 
     return holes_img, crack_img, knot_img
